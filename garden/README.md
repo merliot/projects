@@ -27,3 +27,6 @@ $ ~/go/bin/garden
 [dc_a6_32_7a_a6_d0] Skipping tunnel to mother; missing host
 [dc_a6_32_7a_a6_d0] Received [SYSTEM]: {"Msg":"_CmdRun"}
 ```
+
+## View
+Running started a web server listening on port :80.  Web browse to the web server address to view the user interface.

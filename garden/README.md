@@ -1,6 +1,8 @@
 # Off-Grid Garden Watering System
 This project is an off-grid garden watering system.
 
+An example system using a spike well is detailed [here](https://merliot.net/projects/garden).
+
 ## Get
 ```
 $ git clone https://github.com/merliot/projects.git
@@ -31,6 +33,6 @@ $ ~/go/bin/garden
 ## View
 Running started a web server listening on port :80. 
 
-Web browse to the web server address to view the user interface.
+Web browse to the web server address to view the user interface.  In this case, I'm browsing to 192.168.1.125 on the local network.
 
 ![View](view.png)

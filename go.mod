@@ -8,13 +8,11 @@ require (
 )
 
 require (
-	github.com/CosmWasm/tinyjson v0.9.0 // indirect
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.0.0 // indirect
-	github.com/josharian/intern v1.0.0 // indirect
 	github.com/msteinert/pam v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sigurn/crc8 v0.0.0-20160107002456-e55481d6f45c // indirect
@@ -26,5 +24,3 @@ require (
 	periph.io/x/periph v3.6.2+incompatible // indirect
 	tinygo.org/x/drivers v0.21.0 // indirect
 )
-
-replace github.com/merliot/merle => /home/merle/merle

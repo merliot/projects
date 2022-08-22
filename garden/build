@@ -1,0 +1,6 @@
+#!/bin/bash
+
+go build ./...
+go install ./...
+
+sudo setcap CAP_NET_BIND_SERVICE=+eip ~/go/bin/garden

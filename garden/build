@@ -1,28 +1,5 @@
 #!/bin/bash
 
-go version >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-   echo "Go missing.  Install Go with:"
-   echo ""
-   echo "    sudo apt update"
-   echo "    sudo apt install golang -y"
-   echo ""
-   exit 1
-fi
+source ../build
 
-gcc --version >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-   echo "gcc missing.  Install gcc with:"
-   echo ""
-   echo "    sudo apt update"
-   echo "    sudo apt install gcc -y"
-   echo ""
-   exit 1
-fi
-
-sudo apt-get -y install libpam0g-dev >/dev/null 2>&1
-
-go build ./...
-go install ./...
-
-sudo setcap CAP_NET_BIND_SERVICE=+eip ~/go/bin/garden
+build "garden"

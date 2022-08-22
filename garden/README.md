@@ -3,7 +3,7 @@ This project is an off-grid garden watering system.
 
 ## Get
 ```
-$ git clone https://github.com/merliot/projects
+$ git clone https://github.com/merliot/projects.git
 ```
 
 ## Build

@@ -31,6 +31,6 @@ $ ~/go/bin/garden
 ## View
 Running started a web server listening on port :80. 
 
-Web browse to the web server address to view the user interface.
+Web browse to the web server address to view the user interface.  In this case, I'm browsing to 192.168.1.125 on the local network.
 
 ![View](view.png)

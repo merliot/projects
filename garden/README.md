@@ -5,5 +5,5 @@ This project is an off-grid garden watering system.
 ```
 $ cd projects/garden
 $ ./build
-
+```
 Binary is here: ~/go/bin/garden.

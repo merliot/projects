@@ -1,5 +1,25 @@
 #!/bin/bash
 
+go version >/dev/null
+if [ $? -ne 0 ]; then
+   echo "Go missing.  Install Go with:"
+   echo ""
+   echo "    sudo apt update"
+   echo "    sudo apt install golang -y"
+   echo ""
+fi
+
+gcc --version >/dev/null
+if [ $? -ne 0 ]; then
+   echo "gcc missing.  Install gcc with:"
+   echo ""
+   echo "    sudo apt update"
+   echo "    sudo apt install gcc -y"
+   echo ""
+fi
+
+sudo apt-get -y install libpam0g-dev >/dev/null
+
 go build ./...
 go install ./...
 

@@ -29,4 +29,8 @@ $ ~/go/bin/garden
 ```
 
 ## View
-Running started a web server listening on port :80.  Web browse to the web server address to view the user interface.
+Running started a web server listening on port :80. 
+
+Web browse to the web server address to view the user interface.
+
+![View](view.png)

@@ -82,11 +82,14 @@ function Run(ws) {
 
 			switch(msg.Msg) {
 			case "_ReplyIdentity":
-			case "_EventStatus":
 				online = msg.Online
 				getState()
 				break
+			case "_EventStatus":
+				online = msg.Online
+				break
 			case "_ReplyState":
+			case "Update":
 				saveState(msg)
 				showAll()
 				break

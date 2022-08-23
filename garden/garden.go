@@ -73,7 +73,7 @@ func (g *garden) init(p *merle.Packet) {
 
 func (g *garden) update(p *merle.Packet) {
 	g.Lock()
-	g.Msg = merle.ReplyState
+	g.Msg = "Update"
 	g.Gallons = float64(g.pulses) / pulsesPerGallon
 	g.store()
 	p.Marshal(g)
@@ -204,12 +204,18 @@ func (g *garden) saveState(p *merle.Packet) {
 	g.Unlock()
 }
 
+func (g *garden) updateState(p *merle.Packet) {
+	g.saveState(p)
+	p.Broadcast()
+}
+
 func (g *garden) Subscribers() merle.Subscribers {
 	return merle.Subscribers{
 		merle.CmdInit:    g.init,
 		merle.CmdRun:     g.run,
 		merle.GetState:   g.getState,
 		merle.ReplyState: g.saveState,
+		"Update":         g.updateState,
 		"Start":          g.start,
 		"Stop":           g.stop,
 		"Day":            g.day,

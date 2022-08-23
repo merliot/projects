@@ -3,6 +3,8 @@
 package garden
 
 import (
+	"encoding/json"
+	"os"
 	"sync"
 	"time"
 
@@ -19,6 +21,8 @@ const (
 	cmdStart int = iota
 	cmdStop
 )
+
+const store string = "store"
 
 type garden struct {
 	sync.Mutex
@@ -38,7 +42,21 @@ func NewGarden() merle.Thinger {
 	return &garden{StartTime: "00:00", GallonsGoal: 500.0}
 }
 
+func (g *garden) store() {
+	bytes, _ := json.Marshal(g)
+	os.WriteFile(store, bytes, 0600)
+}
+
+func (g *garden) restore() {
+	bytes, err := os.ReadFile(store)
+	if err == nil {
+		json.Unmarshal(bytes, g)
+	}
+}
+
 func (g *garden) init(p *merle.Packet) {
+	g.restore()
+
 	adaptor := raspi.NewAdaptor()
 	adaptor.Connect()
 
@@ -56,6 +74,7 @@ func (g *garden) update(p *merle.Packet) {
 	g.Lock()
 	g.Msg = merle.ReplyState
 	g.Gallons = float64(g.pulses) / pulsesPerGallon
+	g.store()
 	p.Marshal(g)
 	g.Unlock()
 	p.Broadcast()
@@ -150,6 +169,7 @@ func (g *garden) day(p *merle.Packet) {
 	p.Unmarshal(&msg)
 	g.Lock()
 	g.Days[msg.Day] = msg.State
+	g.store()
 	g.Unlock()
 	p.Broadcast()
 }
@@ -164,6 +184,7 @@ func (g *garden) startTime(p *merle.Packet) {
 	p.Unmarshal(&msg)
 	g.Lock()
 	g.StartTime = msg.Time
+	g.store()
 	g.Unlock()
 	p.Broadcast()
 }

@@ -34,6 +34,7 @@ type garden struct {
 	StartDays   [7]bool
 	Gallons     float64
 	GallonsGoal float64
+	Running     bool
 }
 
 func NewGarden() merle.Thinger {
@@ -91,6 +92,7 @@ func (g *garden) startWatering(p *merle.Packet) {
 	g.Lock()
 	g.pulses = 0
 	g.pulsesGoal = int(g.GallonsGoal * pulsesPerGallon)
+	g.Running = true
 	g.Unlock()
 
 	g.update(p)
@@ -128,6 +130,11 @@ loop:
 	}
 
 	g.relay.Off()
+
+	g.Lock()
+	g.Running = false
+	g.Unlock()
+
 	g.update(p)
 }
 

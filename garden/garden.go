@@ -22,8 +22,6 @@ const (
 	cmdStop
 )
 
-const store string = "store"
-
 type garden struct {
 	sync.Mutex
 	relay       *gpio.RelayDriver
@@ -33,7 +31,7 @@ type garden struct {
 	pulsesGoal  int
 	Msg         string
 	StartTime   string
-	Days        [7]bool
+	StartDays   [7]bool
 	Gallons     float64
 	GallonsGoal float64
 }
@@ -41,6 +39,8 @@ type garden struct {
 func NewGarden() merle.Thinger {
 	return &garden{StartTime: "00:00", GallonsGoal: 500.0}
 }
+
+const store string = "store"
 
 func (g *garden) store() {
 	bytes, _ := json.Marshal(g)
@@ -66,6 +66,7 @@ func (g *garden) init(p *merle.Packet) {
 
 	g.flowMeter = gpio.NewDirectPinDriver(adaptor, "7") // GPIO 4
 	g.flowMeter.Start()
+	g.Gallons = 0.0
 
 	g.cmd = make(chan (int))
 }
@@ -168,7 +169,7 @@ func (g *garden) day(p *merle.Packet) {
 	var msg msgDay
 	p.Unmarshal(&msg)
 	g.Lock()
-	g.Days[msg.Day] = msg.State
+	g.StartDays[msg.Day] = msg.State
 	g.store()
 	g.Unlock()
 	p.Broadcast()

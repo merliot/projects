@@ -23,7 +23,7 @@ function getIdentity() {
 function saveState(msg) {
 	startTime.value = msg.StartTime
 	for (var i = 0; i < days.length; i++) {
-		days[i].checked = msg.Days[i]
+		days[i].checked = msg.StartDays[i]
 	}
 	gallons.innerHTML = msg.Gallons
 }

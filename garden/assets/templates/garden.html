@@ -20,8 +20,10 @@ found in the LICENSE file.
 
 	<body style="background-color:lightblue">
 
-		<input type="time" id="startTime" onchange="changeStartTime()">
-		<br>
+		<div>
+			<input type="time" id="startTime" onchange="changeStartTime()">
+		</div>
+
 		<div>
 			<input type="checkbox" id="day0" onclick="changeDay(this, 0)">
 			<label for="day0">Sunday</label>
@@ -50,10 +52,16 @@ found in the LICENSE file.
 			<input type="checkbox" id="day6" onclick="changeDay(this, 6)">
 			<label for="day0">Saturday</label>
 		</div>
-		<br>
-		<button id="start" onclick="start()">Start</button>
-		<button id="stop" onclick="stop()">Stop</button>
-		<br>
+
+		<div id="progress">
+			<div id="bar"></div>
+		</div>
+
+		<div>
+			<button id="start" onclick="start()">Start</button>
+			<button id="stop" onclick="stop()">Stop</button>
+		</div>
+
 		<div id="gallons">0</div>
 
 		<script src="/{{.AssetsDir}}/js/garden.js"></script>

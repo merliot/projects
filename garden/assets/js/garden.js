@@ -9,10 +9,12 @@ days = []
 for (var i = 0; i < 7; i++) {
 	days[i] = document.getElementById("day" + i)
 }
+
 startTime = document.getElementById("startTime")
 gallons = document.getElementById("gallons")
 startButton = document.getElementById("start")
 stopButton = document.getElementById("stop")
+bar = document.getElementById("bar")
 
 function getState() {
 	conn.send(JSON.stringify({Msg: "_GetState"}))
@@ -30,6 +32,9 @@ function saveState(msg) {
 	gallons.innerHTML = msg.Gallons
 	startButton.disabled = msg.Running
 	stopButton.disabled = !msg.Running
+	progress = parseInt(msg.Gallons / msg.GallonsGoal * 100.0)
+	bar.style.width = progress + "%";
+	bar.innerHTML = progress + "%";
 }
 
 function saveDay(msg) {
@@ -38,9 +43,6 @@ function saveDay(msg) {
 
 function saveStartTime(msg) {
 	startTime.value = msg.Time
-}
-
-function showAll() {
 }
 
 function changeStartTime() {
@@ -72,7 +74,6 @@ function Run(ws) {
 
 		conn.onclose = function(evt) {
 			online = false
-			showAll()
 			setTimeout(connect, 1000)
 		}
 
@@ -95,7 +96,6 @@ function Run(ws) {
 			case "_ReplyState":
 			case "Update":
 				saveState(msg)
-				showAll()
 				break
 			case "Day":
 				saveDay(msg)

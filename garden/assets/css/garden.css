@@ -2,3 +2,17 @@ body {
 	background-color: lightblue;
 	font-family: "Lucida Console", "Courier New", monospace;
 }
+
+#progress {
+  width: 100%;
+  background-color: lightgrey;
+}
+
+#bar {
+  width: 0%;
+  height: 30px;
+  background-color: blue;
+  text-align: center; /* To center it horizontally (if you want) */
+  line-height: 30px; /* To center it vertically */
+  color: white;
+}

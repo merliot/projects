@@ -38,7 +38,7 @@ type garden struct {
 }
 
 func NewGarden() merle.Thinger {
-	return &garden{StartTime: "00:00", GallonsGoal: 500.0}
+	return &garden{StartTime: "00:00", GallonsGoal: 1.0}
 }
 
 const store string = "store"
@@ -57,6 +57,8 @@ func (g *garden) restore() {
 
 func (g *garden) init(p *merle.Packet) {
 	g.restore()
+	g.Gallons = 0.0
+	g.Running = false
 
 	adaptor := raspi.NewAdaptor()
 	adaptor.Connect()
@@ -67,7 +69,6 @@ func (g *garden) init(p *merle.Packet) {
 
 	g.flowMeter = gpio.NewDirectPinDriver(adaptor, "7") // GPIO 4
 	g.flowMeter.Start()
-	g.Gallons = 0.0
 
 	g.cmd = make(chan (int))
 }
@@ -75,7 +76,11 @@ func (g *garden) init(p *merle.Packet) {
 func (g *garden) update(p *merle.Packet) {
 	g.Lock()
 	g.Msg = "Update"
-	g.Gallons = float64(g.pulses) / pulsesPerGallon
+	if g.pulses >= g.pulsesGoal {
+		g.Gallons = g.GallonsGoal
+	} else {
+		g.Gallons = float64(g.pulses) / pulsesPerGallon
+	}
 	g.store()
 	p.Marshal(g)
 	g.Unlock()

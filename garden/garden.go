@@ -28,12 +28,14 @@ type garden struct {
 	pulses      int
 	pulsesGoal  int
 	Msg         string
+	StartTime   string
+	Days        [7]bool
 	Gallons     float64
 	GallonsGoal float64
 }
 
 func NewGarden() merle.Thinger {
-	return &garden{GallonsGoal: 500.0}
+	return &garden{StartTime: "00:00", GallonsGoal: 500.0}
 }
 
 func (g *garden) init(p *merle.Packet) {
@@ -137,6 +139,35 @@ func (g *garden) stop(p *merle.Packet) {
 	}
 }
 
+type msgDay struct {
+	Msg   string
+	Day   int
+	State bool
+}
+
+func (g *garden) day(p *merle.Packet) {
+	var msg msgDay
+	p.Unmarshal(&msg)
+	g.Lock()
+	g.Days[msg.Day] = msg.State
+	g.Unlock()
+	p.Broadcast()
+}
+
+type msgStartTime struct {
+	Msg   string
+	Time  string
+}
+
+func (g *garden) startTime(p *merle.Packet) {
+	var msg msgStartTime
+	p.Unmarshal(&msg)
+	g.Lock()
+	g.StartTime = msg.Time
+	g.Unlock()
+	p.Broadcast()
+}
+
 func (g *garden) getState(p *merle.Packet) {
 	g.Lock()
 	g.Msg = merle.ReplyState
@@ -159,92 +190,14 @@ func (g *garden) Subscribers() merle.Subscribers {
 		merle.ReplyState: g.saveState,
 		"Start":          g.start,
 		"Stop":           g.stop,
+		"Day":            g.day,
+		"StartTime":      g.startTime,
 	}
 }
-
-const html = `
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-	</head>
-	<body style="background-color:lightblue">
-		<button onclick="start()">Start</button>
-		<button onclick="stop()">Stop</button>
-		<div id="gallons">0</div>
-
-		<script>
-			var conn
-			var online = false
-
-			gallons = document.getElementById("gallons")
-
-			function getState() {
-				conn.send(JSON.stringify({Msg: "_GetState"}))
-			}
-
-			function getIdentity() {
-				conn.send(JSON.stringify({Msg: "_GetIdentity"}))
-			}
-
-			function saveState(msg) {
-				gallons.innerHTML = msg.Gallons
-			}
-
-			function showAll() {
-			}
-
-			function start() {
-				conn.send(JSON.stringify({Msg: "Start"}))
-			}
-
-			function stop() {
-				conn.send(JSON.stringify({Msg: "Stop"}))
-			}
-
-			function connect() {
-				conn = new WebSocket("{{.WebSocket}}")
-
-				conn.onopen = function(evt) {
-					getIdentity()
-				}
-
-				conn.onclose = function(evt) {
-					online = false
-					showAll()
-					setTimeout(connect, 1000)
-				}
-
-				conn.onerror = function(err) {
-					conn.close()
-				}
-
-				conn.onmessage = function(evt) {
-					msg = JSON.parse(evt.data)
-					console.log('garden', msg)
-
-					switch(msg.Msg) {
-					case "_ReplyIdentity":
-					case "_EventStatus":
-						online = msg.Online
-						getState()
-					case "_ReplyState":
-						saveState(msg)
-						showAll()
-						break
-					}
-				}
-			}
-
-			connect()
-		</script>
-	</body>
-</html>`
 
 func (g *garden) Assets() *merle.ThingAssets {
 	return &merle.ThingAssets{
-		HtmlTemplateText: html,
+		AssetsDir: "assets",
+		HtmlTemplate: "templates/garden.html",
 	}
 }
-
-// file: examples/garden/garden.go

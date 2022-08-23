@@ -1,0 +1,64 @@
+<!--
+Copyright 2021-2022 Scott Feldman (sfeldma@gmail.com). All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta name="viewport"
+		      content="width=device-width, initial-scale=1">
+
+		<title>{{.Name}}</title>
+
+		<link rel="stylesheet" type="text/css"
+			href="/{{.AssetsDir}}/css/garden.css">
+
+	</head>
+
+	<body style="background-color:lightblue">
+
+		<input type="time" id="startTime" onchange="changeStartTime()">
+		<br>
+		<div>
+			<input type="checkbox" id="day0" onclick="changeDay(this, 0)">
+			<label for="day0">Sunday</label>
+		</div>
+		<div>
+			<input type="checkbox" id="day1" onclick="changeDay(this, 1)">
+			<label for="day0">Monday</label>
+		</div>
+		<div>
+			<input type="checkbox" id="day2" onclick="changeDay(this, 2)">
+			<label for="day0">Tuesday</label>
+		</div>
+		<div>
+			<input type="checkbox" id="day3" onclick="changeDay(this, 3)">
+			<label for="day0">Wednesday</label>
+		</div>
+		<div>
+			<input type="checkbox" id="day4" onclick="changeDay(this, 4)">
+			<label for="day0">Thursday</label>
+		</div>
+		<div>
+			<input type="checkbox" id="day5" onclick="changeDay(this, 5)">
+			<label for="day0">Friday</label>
+		</div>
+		<div>
+			<input type="checkbox" id="day6" onclick="changeDay(this, 6)">
+			<label for="day0">Saturday</label>
+		</div>
+		<br>
+		<button onclick="start()">Start</button>
+		<button onclick="stop()">Stop</button>
+		<br>
+		<div id="gallons">0</div>
+
+		<script src="/{{.AssetsDir}}/js/garden.js"></script>
+		<script>Run({{.WebSocket}})</script>
+
+	</body>
+</html>
+

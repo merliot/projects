@@ -28,6 +28,14 @@ function saveState(msg) {
 	gallons.innerHTML = msg.Gallons
 }
 
+function saveDay(msg) {
+	days[msg.Day].checked = msg.State
+}
+
+function saveStartTime(msg) {
+	startTime.value = msg.Time
+}
+
 function showAll() {
 }
 
@@ -81,6 +89,12 @@ function Run(ws) {
 			case "_ReplyState":
 				saveState(msg)
 				showAll()
+				break
+			case "Day":
+				saveDay(msg)
+				break
+			case "StartTime":
+				saveStartTime(msg)
 				break
 			}
 		}

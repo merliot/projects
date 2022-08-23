@@ -5,6 +5,6 @@
 
 ![Gopher Thing](gopher_cloud.png)
 
-Merle project showcase
+Merle project showcase.
 
 [Merle](https://merliot.org) is a framework for building secure web-apps for your IoT project.

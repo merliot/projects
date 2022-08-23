@@ -11,6 +11,8 @@ for (var i = 0; i < 7; i++) {
 }
 startTime = document.getElementById("startTime")
 gallons = document.getElementById("gallons")
+startButton = document.getElementById("start")
+stopButton = document.getElementById("stop")
 
 function getState() {
 	conn.send(JSON.stringify({Msg: "_GetState"}))
@@ -26,6 +28,8 @@ function saveState(msg) {
 		days[i].checked = msg.StartDays[i]
 	}
 	gallons.innerHTML = msg.Gallons
+	startButton.disabled = msg.Running
+	stopButton.disabled = !msg.Running
 }
 
 function saveDay(msg) {

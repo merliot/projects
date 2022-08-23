@@ -24,15 +24,6 @@ git tag -l --sort=-version:refname | tac | tail -n5
 
 read -p "New Version: " ver
 
-cat << EOF > version.go
-package merle
-const version = "${ver}"
-EOF
-
-git add version.go
-git commit -m "update version to latest tag"
-git push
-
 git tag ${ver}
 git push origin ${ver}
-GOPROXY=proxy.golang.org go list -m github.com/merliot/merle@${ver}
+GOPROXY=proxy.golang.org go list -m github.com/merliot/projects@${ver}

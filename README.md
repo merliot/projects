@@ -1,2 +1,2 @@
-# projects
+# Merle Projects
 Merle project showcase

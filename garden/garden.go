@@ -3,6 +3,7 @@
 package garden
 
 import (
+	"fmt"
 	"encoding/json"
 	"os"
 	"sync"
@@ -144,8 +145,19 @@ loop:
 }
 
 func (g *garden) run(p *merle.Packet) {
+	everyMinute := time.NewTicker(time.Minute)
+
 	for {
 		select {
+		case _ = <-everyMinute.C:
+			now := time.Now()
+			if g.StartDays[now.Weekday()] {
+				hr, min, _ := now.Clock()
+				hhmm := fmt.Sprintf("%d:%d", hr, min)
+				if g.StartTime == hhmm {
+					g.startWatering(p)
+				}
+			}
 		case cmd := <-g.cmd:
 			switch cmd {
 			case cmdStart:

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# This script is for my own development use to push out a new version tag
+
+git diff --exit-code >/dev/null
+if [ $? -ne 0 ]; then
+    echo "local, unstaged changes; aborting"
+    exit 1
+fi
+
+git diff --cached --exit-code >/dev/null
+if [ $? -ne 0 ]; then
+    echo "staged changes but not commited; aborting"
+    exit 1
+fi
+
+git status | grep "Your branch is up to date" >/dev/null
+if [ $? -ne 0 ]; then
+    echo "commits not pushed; aborting"
+    exit 1
+fi
+
+git tag -l --sort=-version:refname | tac | tail -n5
+
+read -p "New Version: " ver
+
+cat << EOF > version.go
+package merle
+const version = "${ver}"
+EOF
+
+git add version.go
+git commit -m "update version to latest tag"
+git push
+
+git tag ${ver}
+git push origin ${ver}
+GOPROXY=proxy.golang.org go list -m github.com/merliot/merle@${ver}

@@ -24,7 +24,7 @@ type garden struct {
 	sync.Mutex
 	relay       *gpio.RelayDriver
 	flowMeter   *gpio.DirectPinDriver
-	cmd         chan(int)
+	cmd         chan (int)
 	pulses      int
 	pulsesGoal  int
 	Msg         string
@@ -47,7 +47,7 @@ func (g *garden) init(p *merle.Packet) {
 	g.flowMeter = gpio.NewDirectPinDriver(adaptor, "7") // GPIO 4
 	g.flowMeter.Start()
 
-	g.cmd = make(chan(int))
+	g.cmd = make(chan (int))
 }
 
 func (g *garden) update(p *merle.Packet) {
@@ -79,7 +79,8 @@ func (g *garden) startWatering(p *merle.Packet) {
 	defer sampler.Stop()
 	defer notify.Stop()
 
-	loop: for {
+loop:
+	for {
 		select {
 		case cmd := <-g.cmd:
 			switch cmd {
@@ -245,4 +246,5 @@ func (g *garden) Assets() *merle.ThingAssets {
 		HtmlTemplateText: html,
 	}
 }
+
 // file: examples/garden/garden.go

@@ -6,3 +6,7 @@
 ![Gopher Thing](gopher_cloud.png)
 
 [Merle](https://merliot.org) is a framework for building secure web-apps for your IoT project.
+
+## Projects
+
+[Off-Grid Solar Watering System](garden)

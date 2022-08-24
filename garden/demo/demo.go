@@ -9,7 +9,8 @@ import (
 )
 
 type demo struct {
-	Msg string
+	Msg     string
+	ChildId string
 }
 
 func NewDemo() merle.Thinger {
@@ -24,6 +25,7 @@ func (d *demo) BridgeThingers() merle.BridgeThingers {
 
 func (d *demo) BridgeSubscribers() merle.Subscribers {
 	return merle.Subscribers{
+		"default": nil, // drop everything at the bridge level silently
 	}
 }
 
@@ -32,11 +34,22 @@ func (d *demo) getState(p *merle.Packet) {
 	p.Marshal(d).Reply()
 }
 
+func (d *demo) update(p *merle.Packet) {
+	var msg merle.MsgEventStatus
+	p.Unmarshal(&msg)
+	d.ChildId = ""
+	if msg.Online {
+		d.ChildId = msg.Id
+	}
+	p.Broadcast()
+}
+
 func (d *demo) Subscribers() merle.Subscribers {
 	return merle.Subscribers{
 		merle.CmdInit:     merle.NoInit,
 		merle.CmdRun:      merle.RunForever,
 		merle.GetState:    d.getState,
+		merle.EventStatus: d.update,
 	}
 }
 

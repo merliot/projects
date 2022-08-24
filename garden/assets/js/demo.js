@@ -7,9 +7,17 @@ function clearScreen() {
 }
 
 function saveState(msg) {
+	if (msg.ChildId != "") {
+		showChild(msg.ChildId)
+	}
 }
 
-function update(child) {
+function update(msg) {
+	if (msg.Online) {
+		showChild(msg.Id)
+	} else {
+		clearScreen()
+	}
 }
 
 function Run(ws) {

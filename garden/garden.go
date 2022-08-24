@@ -30,6 +30,7 @@ type garden struct {
 	cmd         chan (int)
 	pulses      int
 	pulsesGoal  int
+	demo        bool
 	Msg         string
 	StartTime   string
 	StartDays   [7]bool

@@ -31,6 +31,7 @@ type garden struct {
 	pulses      int
 	pulsesGoal  int
 	demo        bool
+	// JSON exports
 	Msg         string
 	StartTime   string
 	StartDays   [7]bool

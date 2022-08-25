@@ -9,6 +9,7 @@ import (
 )
 
 type demo struct {
+	up      chan *merle.Packet
 	Msg     string
 	ChildId string
 }
@@ -23,9 +24,18 @@ func (d *demo) BridgeThingers() merle.BridgeThingers {
 	}
 }
 
+func (d *demo) upLevel(p *merle.Packet) {
+	d.up <- p
+}
+
 func (d *demo) BridgeSubscribers() merle.Subscribers {
 	return merle.Subscribers{
-		"default": nil, // drop everything at the bridge level silently
+		"Update":    d.upLevel,
+		"Start":     d.upLevel,
+		"Stop":      d.upLevel,
+		"Day":       d.upLevel,
+		"StartTime": d.upLevel,
+		"default":   nil, // drop everything else silently
 	}
 }
 
@@ -44,10 +54,24 @@ func (d *demo) update(p *merle.Packet) {
 	p.Broadcast()
 }
 
+func (d *demo) init(p *merle.Packet) {
+	d.up = make(chan *merle.Packet)
+}
+
+func (d *demo) run(p *merle.Packet) {
+	for {
+		select {
+		case childP := <-d.up:
+			childP.Copy(p)
+			p.Broadcast()
+		}
+	}
+}
+
 func (d *demo) Subscribers() merle.Subscribers {
 	return merle.Subscribers{
-		merle.CmdInit:     merle.NoInit,
-		merle.CmdRun:      merle.RunForever,
+		merle.CmdInit:     d.init,
+		merle.CmdRun:      d.run,
 		merle.GetState:    d.getState,
 		merle.EventStatus: d.update,
 	}

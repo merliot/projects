@@ -15,6 +15,9 @@
 	<body>
 		
 		<iframe class="child" id="child"></iframe>
+		<div>
+			<textarea id="log" rows="12" readonly></textarea>
+		</div>
 
 		<script src="/{{.AssetsDir}}/js/demo.js"></script>
 		<script>Run({{.WebSocket}})</script>

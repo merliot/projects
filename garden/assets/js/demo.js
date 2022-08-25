@@ -1,3 +1,5 @@
+log = document.getElementById("log")
+
 function showChild(id) {
 	document.getElementById("child").src = "/" + encodeURIComponent(id)
 }
@@ -45,6 +47,8 @@ function Run(ws) {
 			var msg = JSON.parse(evt.data)
 
 			console.log('garden_demo', msg)
+			log.innerHTML += JSON.stringify(msg) + '\r\n'
+			log.scrollTop = log.scrollHeight
 
 			switch(msg.Msg) {
 			case "_ReplyState":

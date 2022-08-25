@@ -8,21 +8,31 @@ import (
 	"log"
 
 	"github.com/merliot/merle"
+	"github.com/merliot/projects/garden"
 	"github.com/merliot/projects/garden/demo"
 )
 
 func main() {
-	thing := merle.NewThing(demo.NewDemo())
+	garden := merle.NewThing(garden.NewGarden())
 
-	thing.Cfg.Model = "garden_demo"
-	thing.Cfg.Name = "garden_demo"
+	garden.Cfg.Id = "garden"
+	garden.Cfg.Model = "garden"
+	garden.Cfg.Name = "garden01"
+	garden.Cfg.PortPrivate = 7000
+	garden.Cfg.MotherHost = "localhost"
+	garden.Cfg.MotherUser = "merle"
 
-	thing.Cfg.PortPublic = 80
-	thing.Cfg.PortPrivate = 6000
+	go garden.Run()
 
-	flag.UintVar(&thing.Cfg.PortPublicTLS, "TLS", 0, "TLS port")
+	demo := merle.NewThing(demo.NewDemo())
 
+	demo.Cfg.Model = "garden_demo"
+	demo.Cfg.Name = "garden_demo"
+	demo.Cfg.PortPublic = 80
+	demo.Cfg.PortPrivate = 6000
+
+	flag.UintVar(&demo.Cfg.PortPublicTLS, "TLS", 0, "TLS port")
 	flag.Parse()
 
-	log.Fatalln(thing.Run())
+	log.Fatalln(demo.Run())
 }

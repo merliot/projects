@@ -2,12 +2,24 @@
 
 echo "Checking setup..."
 
+wantGoVer="1.18.0"
 go version >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-   echo "Go missing.  Install Go with:"
+   echo "Go missing.  Need Go version >= $wantGoVer. Install Go with:"
    echo ""
    echo "    sudo apt update"
    echo "    sudo apt install golang -y"
+   echo ""
+   exit 1
+fi
+
+goVer=`go version | { read _ _ v _; echo ${v#go}; }`
+if [ "$(printf '%s\n' "$wantGoVer" "$goVer" | sort -V | head -n1)" = "$wantGoVer" ]; then
+   echo "Go version $goVer"
+else
+   echo "Need Go version >= $wantGoVer.  Installed version is $goVer."
+   echo ""
+   echo "Install latest Go from https://go.dev/doc/install"
    echo ""
    exit 1
 fi

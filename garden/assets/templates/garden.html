@@ -15,6 +15,9 @@
 	<body style="background-color:lightblue">
 
 		<div>
+			<p>Current Day/Time: <span id='date-time'></span></p>
+		</div>
+		<div>
 			<input type="time" id="startTime" onchange="changeStartTime()">
 		</div>
 
@@ -57,6 +60,7 @@
 		</div>
 
 		<div id="gallons">0</div>
+		<input id="gallonsGoal"></input>
 
 		<script src="/{{.AssetsDir}}/js/garden.js"></script>
 		<script>Run({{.WebSocket}})</script>

@@ -8,9 +8,11 @@ for (var i = 0; i < 7; i++) {
 
 startTime = document.getElementById("startTime")
 gallons = document.getElementById("gallons")
+gallonsGoal = document.getElementById("gallonsGoal")
 startButton = document.getElementById("start")
 stopButton = document.getElementById("stop")
 bar = document.getElementById("bar")
+dateTime = document.getElementById("date-time")
 
 function getState() {
 	conn.send(JSON.stringify({Msg: "_GetState"}))
@@ -20,17 +22,22 @@ function getIdentity() {
 	conn.send(JSON.stringify({Msg: "_GetIdentity"}))
 }
 
+function update(msg) {
+	gallons.innerHTML = msg.Gallons
+	startButton.disabled = msg.Running
+	stopButton.disabled = !msg.Running
+	progress = parseInt(msg.Gallons / gallonsGoal.value * 100.0)
+	bar.style.width = progress + "%";
+	bar.innerHTML = progress + "%";
+}
+
 function saveState(msg) {
 	startTime.value = msg.StartTime
 	for (var i = 0; i < days.length; i++) {
 		days[i].checked = msg.StartDays[i]
 	}
-	gallons.innerHTML = msg.Gallons
-	startButton.disabled = msg.Running
-	stopButton.disabled = !msg.Running
-	progress = parseInt(msg.Gallons / msg.GallonsGoal * 100.0)
-	bar.style.width = progress + "%";
-	bar.innerHTML = progress + "%";
+	gallonsGoal.value = msg.GallonsGoal
+	update(msg)
 }
 
 function saveDay(msg) {
@@ -59,7 +66,19 @@ function stop() {
 	conn.send(JSON.stringify({Msg: "Stop"}))
 }
 
+function showNow() {
+	dateTime.innerHTML = new Date().toLocaleString('en-US', {
+		weekday: 'long',
+		hour: '2-digit',
+		minute: '2-digit',
+		timeZoneName: "short",
+	});
+	setTimeout('showNow()', 1000)
+}
+
 function Run(ws) {
+
+	showNow()
 
 	function connect() {
 		conn = new WebSocket(ws)
@@ -90,8 +109,10 @@ function Run(ws) {
 				online = msg.Online
 				break
 			case "_ReplyState":
-			case "Update":
 				saveState(msg)
+				break
+			case "Update":
+				update(msg)
 				break
 			case "Day":
 				saveDay(msg)

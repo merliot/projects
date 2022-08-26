@@ -1,22 +1,45 @@
 log = document.getElementById("log")
+child = document.getElementById("child")
+stateBtn = document.getElementById("stateBtn")
 
-function showChild(id) {
-	document.getElementById("child").src = "/" + encodeURIComponent(id)
+var childId = ""
+
+function state() {
+	if (stateBtn.value == "Show State") {
+		stateBtn.value = "Show UI"
+	} else {
+		stateBtn.value = "Show State"
+	}
+	showChild()
+}
+
+function showChild() {
+	if (childId == "") {
+		child.src = ""
+		return
+	}
+
+	if (stateBtn.value == "Show State") {
+		child.src = "/" + encodeURIComponent(childId)
+	} else {
+		child.src = "/" + encodeURIComponent(childId) + "/state"
+	}
 }
 
 function clearScreen() {
-	document.getElementById("child").src = ""
+	childId = ""
+	showChild()
+	log.innerHTML = ""
 }
 
 function saveState(msg) {
-	if (msg.ChildId != "") {
-		showChild(msg.ChildId)
-	}
+	childId = msg.ChildId
+	showChild()
 }
 
 function update(msg) {
 	if (msg.Online) {
-		showChild(msg.Id)
+		saveState(msg)
 	} else {
 		clearScreen()
 	}

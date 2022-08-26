@@ -30,9 +30,10 @@ type garden struct {
 	cmd         chan (int)
 	pulses      int
 	pulsesGoal  int
-	demo        bool
+	demoFlow    int
 	// JSON exports
 	Msg         string
+	Demo        bool      `json:"-"`
 	StartTime   string
 	StartDays   [7]bool
 	Gallons     float64
@@ -40,7 +41,7 @@ type garden struct {
 	Running     bool
 }
 
-func NewGarden() merle.Thinger {
+func NewGarden() *garden {
 	return &garden{StartTime: "00:00", GallonsGoal: 1.0}
 }
 
@@ -62,6 +63,11 @@ func (g *garden) init(p *merle.Packet) {
 	g.restore()
 	g.Gallons = 0.0
 	g.Running = false
+	g.cmd = make(chan (int))
+
+	if g.Demo {
+		return
+	}
 
 	adaptor := raspi.NewAdaptor()
 	adaptor.Connect()
@@ -72,26 +78,51 @@ func (g *garden) init(p *merle.Packet) {
 
 	g.flowMeter = gpio.NewDirectPinDriver(adaptor, "7") // GPIO 4
 	g.flowMeter.Start()
+}
 
-	g.cmd = make(chan (int))
+type msgUpdate struct {
+	Msg   string
+	Gallons     float64
+	Running     bool
 }
 
 func (g *garden) update(p *merle.Packet) {
+	var msg = msgUpdate{Msg: "Update"}
 	g.Lock()
-	g.Msg = "Update"
 	if g.pulses >= g.pulsesGoal {
 		g.Gallons = g.GallonsGoal
 	} else {
 		g.Gallons = float64(g.pulses) / pulsesPerGallon
 	}
-	g.store()
-	p.Marshal(g)
+	msg.Gallons = g.Gallons
+	msg.Running = g.Running
 	g.Unlock()
-	p.Broadcast()
+	p.Marshal(&msg).Broadcast()
+}
+
+func (g *garden) pumpOn() {
+	if !g.Demo {
+		g.relay.On()
+	}
+}
+
+func (g *garden) pumpOff() {
+	if !g.Demo {
+		g.relay.Off()
+	}
+}
+
+func (g *garden) flow() (int, error) {
+	if g.Demo {
+		g.demoFlow++
+		return g.demoFlow & 1, nil
+	} else {
+		return g.flowMeter.DigitalRead()
+	}
 }
 
 func (g *garden) startWatering(p *merle.Packet) {
-	prevVal, err := g.flowMeter.DigitalRead()
+	prevVal, err := g.flow()
 	if err != nil {
 		println("ADC channel 0 read error:", err)
 		return
@@ -104,10 +135,10 @@ func (g *garden) startWatering(p *merle.Packet) {
 	g.Unlock()
 
 	g.update(p)
-	g.relay.On()
+	g.pumpOn()
 
 	sampler := time.NewTicker(5 * time.Millisecond)
-	notify := time.NewTicker(5 * time.Second)
+	notify := time.NewTicker(time.Second)
 	defer sampler.Stop()
 	defer notify.Stop()
 
@@ -120,7 +151,7 @@ loop:
 				break loop
 			}
 		case _ = <-sampler.C:
-			val, _ := g.flowMeter.DigitalRead()
+			val, _ := g.flow()
 			if val != prevVal {
 				if val == 1 {
 					g.Lock()
@@ -137,7 +168,7 @@ loop:
 		}
 	}
 
-	g.relay.Off()
+	g.pumpOff()
 
 	g.Lock()
 	g.Running = false
@@ -147,17 +178,25 @@ loop:
 }
 
 func (g *garden) run(p *merle.Packet) {
-	everyMinute := time.NewTicker(time.Minute)
+	waiting := false
+	everySecond := time.NewTicker(time.Second)
 
 	for {
 		select {
-		case _ = <-everyMinute.C:
+		case _ = <-everySecond.C:
 			now := time.Now()
 			if g.StartDays[now.Weekday()] {
 				hr, min, _ := now.Clock()
 				hhmm := fmt.Sprintf("%d:%d", hr, min)
 				if g.StartTime == hhmm {
-					g.startWatering(p)
+					if !waiting {
+						g.startWatering(p)
+						// if we watered in less than a minute,
+						// wait until next minute to check
+						waiting = true
+					}
+				} else {
+					waiting = false
 				}
 			}
 		case cmd := <-g.cmd:

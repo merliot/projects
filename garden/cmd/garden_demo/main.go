@@ -13,16 +13,19 @@ import (
 )
 
 func main() {
-	garden := merle.NewThing(garden.NewGarden())
+	garden := garden.NewGarden()
+	garden.Demo = true
 
-	garden.Cfg.Id = "garden"
-	garden.Cfg.Model = "garden"
-	garden.Cfg.Name = "garden01"
-	garden.Cfg.PortPrivate = 7000
-	garden.Cfg.MotherHost = "localhost"
-	garden.Cfg.MotherUser = "merle"
+	thing := merle.NewThing(garden)
 
-	go garden.Run()
+	thing.Cfg.Id = "garden"
+	thing.Cfg.Model = "garden"
+	thing.Cfg.Name = "garden01"
+	thing.Cfg.PortPrivate = 7000
+	thing.Cfg.MotherHost = "localhost"
+	thing.Cfg.MotherUser = "merle"
+
+	go thing.Run()
 
 	demo := merle.NewThing(demo.NewDemo())
 

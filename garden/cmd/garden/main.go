@@ -12,7 +12,8 @@ import (
 )
 
 func main() {
-	thing := merle.NewThing(garden.NewGarden())
+	garden := garden.NewGarden()
+	thing := merle.NewThing(garden)
 
 	thing.Cfg.Model = "garden"
 	thing.Cfg.Name = "eden"
@@ -21,6 +22,7 @@ func main() {
 	thing.Cfg.PortPublic = 80
 	thing.Cfg.PortPrivate = 6000
 
+	flag.BoolVar(&garden.Demo, "demo", false, "Run in demo mode")
 	flag.StringVar(&thing.Cfg.MotherHost, "rhost", "", "Remote host")
 	flag.StringVar(&thing.Cfg.MotherUser, "ruser", "merle", "Remote user")
 	flag.BoolVar(&thing.Cfg.IsPrime, "prime", false, "Run as Thing Prime")

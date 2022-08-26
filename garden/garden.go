@@ -34,6 +34,7 @@ type garden struct {
 	// JSON exports
 	Msg         string
 	Demo        bool      `json:"-"`
+	Now         time.Time
 	StartTime   string
 	StartDays   [7]bool
 	Gallons     float64
@@ -178,27 +179,31 @@ loop:
 }
 
 func (g *garden) run(p *merle.Packet) {
-	waiting := false
-	everySecond := time.NewTicker(time.Second)
+	// Timer starts on 1 sec after next whole minute
+	future := time.Now().Truncate(time.Minute).
+		Add(time.Minute).Add(time.Second)
+	next := future.Sub(time.Now())
+	println(next.String())
+	timer := time.NewTimer(next)
 
 	for {
 		select {
-		case _ = <-everySecond.C:
+		case _ = <-timer.C:
 			now := time.Now()
 			if g.StartDays[now.Weekday()] {
 				hr, min, _ := now.Clock()
-				hhmm := fmt.Sprintf("%d:%d", hr, min)
+				hhmm := fmt.Sprintf("%02d:%02d", hr, min)
+				println(hhmm, g.StartTime)
 				if g.StartTime == hhmm {
-					if !waiting {
-						g.startWatering(p)
-						// if we watered in less than a minute,
-						// wait until next minute to check
-						waiting = true
-					}
-				} else {
-					waiting = false
+					g.startWatering(p)
 				}
 			}
+			// Timer starts on 1 sec after next whole minute
+			future := time.Now().Truncate(time.Minute).
+				Add(time.Minute).Add(time.Second)
+			next := future.Sub(time.Now())
+			println(next.String())
+			timer = time.NewTimer(next)
 		case cmd := <-g.cmd:
 			switch cmd {
 			case cmdStart:
@@ -258,6 +263,7 @@ func (g *garden) startTime(p *merle.Packet) {
 func (g *garden) getState(p *merle.Packet) {
 	g.Lock()
 	g.Msg = merle.ReplyState
+	g.Now = time.Now()
 	p.Marshal(g)
 	g.Unlock()
 	p.Reply()

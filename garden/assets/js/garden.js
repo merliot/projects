@@ -1,5 +1,6 @@
 var conn
 var online = false
+var timeDiff
 
 days = []
 for (var i = 0; i < 7; i++) {
@@ -32,6 +33,11 @@ function update(msg) {
 }
 
 function saveState(msg) {
+
+	nowRemote = new Date(msg.Now)
+	nowLocal = new Date()
+	timeDiff = nowLocal - nowRemote
+
 	startTime.value = msg.StartTime
 	for (var i = 0; i < days.length; i++) {
 		days[i].checked = msg.StartDays[i]
@@ -67,18 +73,17 @@ function stop() {
 }
 
 function showNow() {
-	dateTime.innerHTML = new Date().toLocaleString('en-US', {
+	now = new Date(new Date() - timeDiff)
+	dateTime.innerHTML = now.toLocaleString('en-US', {
 		weekday: 'long',
 		hour: '2-digit',
 		minute: '2-digit',
 		timeZoneName: "short",
 	});
-	setTimeout('showNow()', 1000)
+	setTimeout('showNow()', (60 - (now.getSeconds())) * 1000)
 }
 
 function Run(ws) {
-
-	showNow()
 
 	function connect() {
 		conn = new WebSocket(ws)
@@ -110,6 +115,7 @@ function Run(ws) {
 				break
 			case "_ReplyState":
 				saveState(msg)
+				showNow()
 				break
 			case "Update":
 				update(msg)

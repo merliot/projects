@@ -38,12 +38,12 @@ type garden struct {
 	StartTime   string
 	StartDays   [7]bool
 	Gallons     float64
-	GallonsGoal float64
+	GallonsGoal uint
 	Running     bool
 }
 
 func NewGarden() *garden {
-	return &garden{StartTime: "00:00", GallonsGoal: 1.0}
+	return &garden{StartTime: "00:00", GallonsGoal: 1}
 }
 
 const store string = "store"
@@ -82,16 +82,16 @@ func (g *garden) init(p *merle.Packet) {
 }
 
 type msgUpdate struct {
-	Msg   string
-	Gallons     float64
-	Running     bool
+	Msg     string
+	Gallons float64
+	Running bool
 }
 
 func (g *garden) update(p *merle.Packet) {
 	var msg = msgUpdate{Msg: "Update"}
 	g.Lock()
 	if g.pulses >= g.pulsesGoal {
-		g.Gallons = g.GallonsGoal
+		g.Gallons = float64(g.GallonsGoal)
 	} else {
 		g.Gallons = float64(g.pulses) / pulsesPerGallon
 	}
@@ -131,7 +131,7 @@ func (g *garden) startWatering(p *merle.Packet) {
 
 	g.Lock()
 	g.pulses = 0
-	g.pulsesGoal = int(g.GallonsGoal * pulsesPerGallon)
+	g.pulsesGoal = int(float64(g.GallonsGoal) * pulsesPerGallon)
 	g.Running = true
 	g.Unlock()
 
@@ -228,7 +228,7 @@ func (g *garden) stop(p *merle.Packet) {
 
 type msgDay struct {
 	Msg   string
-	Day   int
+	Day   uint
 	State bool
 }
 
@@ -252,6 +252,21 @@ func (g *garden) startTime(p *merle.Packet) {
 	p.Unmarshal(&msg)
 	g.Lock()
 	g.StartTime = msg.Time
+	g.store()
+	g.Unlock()
+	p.Broadcast()
+}
+
+type msgGallonsGoal struct {
+	Msg         string
+	GallonsGoal uint
+}
+
+func (g *garden) gallonsGoal(p *merle.Packet) {
+	var msg msgGallonsGoal
+	p.Unmarshal(&msg)
+	g.Lock()
+	g.GallonsGoal = msg.GallonsGoal
 	g.store()
 	g.Unlock()
 	p.Broadcast()
@@ -288,6 +303,7 @@ func (g *garden) Subscribers() merle.Subscribers {
 		"Stop":           g.stop,
 		"Day":            g.day,
 		"StartTime":      g.startTime,
+		"GallonsGoal":    g.gallonsGoal,
 	}
 }
 

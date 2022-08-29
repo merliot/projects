@@ -44,6 +44,8 @@ fi
 tmpFile="/tmp/$USER-merle-build"
 go list -tags "$tags" -f '{{.Dir}} {{.Target}}' ./... >$tmpFile
 
+buildGood=1
+
 while read -r line; do
 	args=($line)
 	if [ ! -z ${args[1]} ]; then
@@ -51,6 +53,7 @@ while read -r line; do
 		cd ${args[0]}
 		go build -tags "$tags" ./...
 		if [ $? -ne 0 ]; then
+			buildGood=0
 			break
 		fi
 		go clean -tags "$tags" ./...
@@ -60,3 +63,7 @@ while read -r line; do
 done <$tmpFile
 
 rm $tmpFile
+
+if [ $buildGood -eq 0 ]; then
+	exit 1
+fi

@@ -24,7 +24,7 @@ function getIdentity() {
 }
 
 function update(msg) {
-	gallons.innerHTML = msg.Gallons
+	gallons.innerHTML = msg.Gallons.toFixed(2)
 	startButton.disabled = msg.Running
 	stopButton.disabled = !msg.Running
 	progress = parseInt(msg.Gallons / gallonsGoal.value * 100.0)
@@ -54,6 +54,10 @@ function saveStartTime(msg) {
 	startTime.value = msg.Time
 }
 
+function saveGallonsGoal(msg) {
+	gallonsGoal.value = msg.GallonsGoal
+}
+
 function changeStartTime() {
 	conn.send(JSON.stringify({Msg: "StartTime",
 		Time: startTime.value}))
@@ -62,6 +66,11 @@ function changeStartTime() {
 function changeDay(box, day) {
 	conn.send(JSON.stringify({Msg: "Day", Day: day,
 		State: box.checked}))
+}
+
+function changeGallonsGoal() {
+	conn.send(JSON.stringify({Msg: "GallonsGoal",
+		GallonsGoal: parseInt(gallonsGoal.value)}))
 }
 
 function start() {
@@ -125,6 +134,9 @@ function Run(ws) {
 				break
 			case "StartTime":
 				saveStartTime(msg)
+				break
+			case "GallonsGoal":
+				saveGallonsGoal(msg)
 				break
 			}
 		}

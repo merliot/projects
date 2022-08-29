@@ -3,6 +3,10 @@ body {
 	font-family: "Lucida Console", "Courier New", monospace;
 }
 
+#startDayTime {
+	border: 2px solid black;
+}
+
 #progress {
   width: 100%;
   background-color: lightgrey;

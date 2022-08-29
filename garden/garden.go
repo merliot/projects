@@ -183,7 +183,6 @@ func (g *garden) run(p *merle.Packet) {
 	future := time.Now().Truncate(time.Minute).
 		Add(time.Minute).Add(time.Second)
 	next := future.Sub(time.Now())
-	println(next.String())
 	timer := time.NewTimer(next)
 
 	for {
@@ -193,7 +192,6 @@ func (g *garden) run(p *merle.Packet) {
 			if g.StartDays[now.Weekday()] {
 				hr, min, _ := now.Clock()
 				hhmm := fmt.Sprintf("%02d:%02d", hr, min)
-				println(hhmm, g.StartTime)
 				if g.StartTime == hhmm {
 					g.startWatering(p)
 				}
@@ -202,7 +200,6 @@ func (g *garden) run(p *merle.Packet) {
 			future := time.Now().Truncate(time.Minute).
 				Add(time.Minute).Add(time.Second)
 			next := future.Sub(time.Now())
-			println(next.String())
 			timer = time.NewTimer(next)
 		case cmd := <-g.cmd:
 			switch cmd {

@@ -29,6 +29,7 @@ func main() {
 
 	demo := merle.NewThing(demo.NewDemo())
 
+	demo.Cfg.Id = "garden_demo"
 	demo.Cfg.Model = "garden_demo"
 	demo.Cfg.Name = "garden_demo"
 	demo.Cfg.PortPublic = 80

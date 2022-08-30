@@ -30,12 +30,13 @@ func (d *demo) upLevel(p *merle.Packet) {
 
 func (d *demo) BridgeSubscribers() merle.Subscribers {
 	return merle.Subscribers{
-		"Update":    d.upLevel,
-		"Start":     d.upLevel,
-		"Stop":      d.upLevel,
-		"Day":       d.upLevel,
-		"StartTime": d.upLevel,
-		"default":   nil, // drop everything else silently
+		"Update":      d.upLevel,
+		"Start":       d.upLevel,
+		"Stop":        d.upLevel,
+		"Day":         d.upLevel,
+		"StartTime":   d.upLevel,
+		"GallonsGoal": d.upLevel,
+		"default":     nil, // drop everything else silently
 	}
 }
 

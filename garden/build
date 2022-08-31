@@ -4,4 +4,4 @@
 #
 #  ./build demo
 
-../scripts/build $1
+../scripts/build $@

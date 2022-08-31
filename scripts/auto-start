@@ -1,5 +1,22 @@
 #!/bin/bash
 
+
+#
+# Setup rsyslog logging
+#
+
+cat << EOF | sudo tee /etc/rsyslog.d/$1.conf
+if \$programname == '$1' then
+/var/log/$1.log
+& stop
+EOF
+
+sudo systemctl restart rsyslog.service
+
+#
+# Setup systemd service for automatic restart on power failure
+#
+
 cat << EOF | sudo tee /lib/systemd/system/$1.service
 [Unit]
 Description=$1

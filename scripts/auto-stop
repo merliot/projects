@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# stop logging
+sudo rm /etc/rsyslog.d/$1.conf
+sudo systemctl restart rsyslog.service
+sudo rm /var/log/$1.log
+
+# stop service
 sudo systemctl stop $1
 sudo rm /lib/systemd/system/$1.service
 sudo systemctl daemon-reload

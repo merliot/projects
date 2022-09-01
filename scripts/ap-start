@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#
+# Install/enable the access point software package (hostapd)
+#
+
+echo "Installing access point software"
+sudo rm /etc/dnsmasq.conf
+sudo apt install hostapd dnsmasq netfilter-persistent iptables-persistent -y >/dev/null 2>&1
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+
+FOUND=`grep "# Run DHCP server on wlan0" /etc/dhcpcd.conf`
+
+if [ -z "${FOUND}" ]; then
+
+sudo tee -a /etc/dhcpcd.conf >/dev/null <<EOF
+# Run DHCP server on wlan0
+interface wlan0
+    static ip_address=192.168.57.1/24
+    nohook wpa_supplicant
+EOF
+
+fi
+
+sudo tee /etc/dnsmasq.conf >/dev/null <<EOF
+interface=wlan0 # Listening interface
+dhcp-range=192.168.57.2,192.168.57.20,255.255.255.0,24h
+                # Pool of IP addresses served via DHCP
+domain=wlan     # Local wireless DNS domain
+EOF
+
+sudo rfkill unblock wlan
+
+sudo tee /etc/hostapd/hostapd.conf >/dev/null <<EOF
+country_code=US
+interface=wlan0
+ssid=test
+hw_mode=g
+channel=7
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+rsn_pairwise=CCMP
+EOF
+
+echo "Reboot for Wifi AP to activate"

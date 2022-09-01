@@ -4,15 +4,18 @@
 # wget -O deploy https://raw.githubusercontent.com/merliot/projects/main/scripts/deploy && chmod +x deploy && ./deploy
 #
  
-sudo apt update
-sudo apt install git -y
 wget https://go.dev/dl/go1.19.linux-armv6l.tar.gz
 sudo tar -C /usr/local -zxf go1.19.linux-armv6l.tar.gz 
 export PATH=/usr/local/go/bin:$PATH
+
+sudo apt update
+sudo apt install git -y
 git clone --depth=1 https://github.com/merliot/projects.git
 cd projects/garden
+
 ./build
 ./auto-start 
 ../scripts/ap-start 
+
 sudo /etc/init.d/ssh stop
 sudo update-rc.d ssh disable

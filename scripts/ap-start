@@ -35,7 +35,7 @@ sudo rfkill unblock wlan
 sudo tee /etc/hostapd/hostapd.conf >/dev/null <<EOF
 country_code=US
 interface=wlan0
-ssid=test
+ssid=garden
 hw_mode=g
 channel=7
 macaddr_acl=0

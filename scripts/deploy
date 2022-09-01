@@ -1,7 +1,9 @@
 #!/bin/bash
     
 #
-# wget -O deploy https://raw.githubusercontent.com/merliot/projects/main/scripts/deploy && chmod +x deploy && ./deploy
+# wget -O deploy https://raw.githubusercontent.com/merliot/projects/main/scripts/deploy
+# chmod +x deploy
+# ./deploy
 #
  
 wget https://go.dev/dl/go1.19.linux-armv6l.tar.gz

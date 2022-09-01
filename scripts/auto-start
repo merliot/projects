@@ -27,6 +27,9 @@ After=network.target
 Type=simple
 User=$USER
 
+After=network-online.target
+Wants=network-online.target
+
 WorkingDirectory=/home/$USER/projects/$1
 ExecStart=/home/$USER/go/bin/$1
 

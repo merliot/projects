@@ -1,6 +1,7 @@
 log = document.getElementById("log")
 child = document.getElementById("child")
 stateBtn = document.getElementById("stateBtn")
+overlay = document.getElementById("overlay")
 
 var childId = ""
 
@@ -79,6 +80,12 @@ function Run(ws) {
 				break
 			case "_EventStatus":
 				update(msg)
+				break
+			case "Start":
+				overlay.style.display = "block"
+				break
+			case "Stop":
+				overlay.style.display = "none"
 				break
 			}
 		}

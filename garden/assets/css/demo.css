@@ -45,12 +45,22 @@ input, button {
 	padding: 20px;
 }
 
-#logDiv {
+#gardenDiv {
 	display: flex;
 	flex-direction: column;
 }
 
-#gardenDiv {
+#garden {
+	z-index: 0;
+}
+
+#overlay {
+	z-index: 1;
+	position: absolute;
+	display: none;
+}
+
+#logDiv {
 	display: flex;
 	flex-direction: column;
 }

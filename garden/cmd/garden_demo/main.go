@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"log"
+	"os/user"
 
 	"github.com/merliot/merle"
 	"github.com/merliot/projects/garden"
@@ -13,6 +14,11 @@ import (
 )
 
 func main() {
+	user, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	garden := garden.NewGarden()
 	garden.Demo = true
 
@@ -23,7 +29,7 @@ func main() {
 	thing.Cfg.Name = "garden01"
 	thing.Cfg.PortPrivate = 7000
 	thing.Cfg.MotherHost = "localhost"
-	thing.Cfg.MotherUser = "merle"
+	thing.Cfg.MotherUser = user.Username
 
 	go thing.Run()
 

@@ -1,4 +1,4 @@
-// file: examples/garden/garden.go
+// file: projects/garden/garden.go
 
 package garden
 

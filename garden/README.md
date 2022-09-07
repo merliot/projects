@@ -1,7 +1,9 @@
 # Off-Grid Garden Watering System
 This project is an off-grid garden watering system.
 
-An example system using a spike well is detailed [here](https://merliot.net/projects/garden).
+An example system using a spike well is detailed [here](https://hackaday.io/project/187079-off-grid-garden-watering-system).
+
+You can run a demo of the system [here](https://merliot.net/projects/garden).
 
 ## Get
 ```

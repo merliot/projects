@@ -10,6 +10,11 @@ wget https://go.dev/dl/go1.19.linux-armv6l.tar.gz
 sudo tar -C /usr/local -zxf go1.19.linux-armv6l.tar.gz 
 export PATH=/usr/local/go/bin:$PATH
 
+cat << EOF >> ~/.profile
+
+export PATH=/usr/local/go/bin:\$PATH
+EOF
+
 sudo apt update
 sudo apt install git -y
 git clone --depth=1 https://github.com/merliot/projects.git

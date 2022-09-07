@@ -22,6 +22,9 @@ func main() {
 	thing.Cfg.PortPrivate = 6000
 
 	flag.BoolVar(&garden.Demo, "demo", false, "Run in demo mode")
+	flag.UintVar(&garden.GpioRelay, "relay", garden.GpioRelay, "Relay GPIO pin")
+	flag.UintVar(&garden.GpioMeter, "meter", garden.GpioMeter, "Flow meter GPIO pin")
+
 	flag.StringVar(&thing.Cfg.MotherHost, "rhost", "", "Remote host")
 	flag.StringVar(&thing.Cfg.MotherUser, "ruser", "merle", "Remote user")
 	flag.BoolVar(&thing.Cfg.IsPrime, "prime", false, "Run as Thing Prime")

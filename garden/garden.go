@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -31,9 +32,11 @@ type garden struct {
 	pulses      int
 	pulsesGoal  int
 	demoFlow    int
+	Demo        bool      `json:"-"`
+	GpioRelay   uint      `json:"-"`
+	GpioMeter   uint      `json:"-"`
 	// JSON exports
 	Msg         string
-	Demo        bool      `json:"-"`
 	Now         time.Time
 	StartTime   string
 	StartDays   [7]bool
@@ -43,7 +46,12 @@ type garden struct {
 }
 
 func NewGarden() *garden {
-	return &garden{StartTime: "00:00", GallonsGoal: 1}
+	return &garden{
+		GpioRelay:   31,      // GPIO 6
+		GpioMeter:   7,       // GPIO 4
+		StartTime:   "00:00",
+		GallonsGoal: 1,
+	}
 }
 
 const store string = "store"
@@ -73,11 +81,13 @@ func (g *garden) init(p *merle.Packet) {
 	adaptor := raspi.NewAdaptor()
 	adaptor.Connect()
 
-	g.relay = gpio.NewRelayDriver(adaptor, "31") // GPIO 6
+	relayPin := strconv.FormatUint(uint64(g.GpioRelay), 10)
+	g.relay = gpio.NewRelayDriver(adaptor, relayPin)
 	g.relay.Start()
 	g.relay.Off()
 
-	g.flowMeter = gpio.NewDirectPinDriver(adaptor, "7") // GPIO 4
+	meterPin := strconv.FormatUint(uint64(g.GpioMeter), 10)
+	g.flowMeter = gpio.NewDirectPinDriver(adaptor, meterPin)
 	g.flowMeter.Start()
 }
 

@@ -15,6 +15,12 @@ stopButton = document.getElementById("stop")
 bar = document.getElementById("bar")
 dateTime = document.getElementById("date-time")
 
+function sendDateTime() {
+	now = new Date()
+	conn.send(JSON.stringify({Msg: "DateTime",
+		DateTime: now, ZoneOffsetMinutes: now.getTimezoneOffset()}))
+}
+
 function getState() {
 	conn.send(JSON.stringify({Msg: "_GetState"}))
 }
@@ -98,6 +104,7 @@ function Run(ws) {
 		conn = new WebSocket(ws)
 
 		conn.onopen = function(evt) {
+			sendDateTime()
 			getIdentity()
 		}
 

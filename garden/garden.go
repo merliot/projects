@@ -32,6 +32,8 @@ type garden struct {
 	pulses      int
 	pulsesGoal  int
 	demoFlow    int
+	dur         time.Duration
+	loc         *time.Location
 	Demo        bool      `json:"-"`
 	GpioRelay   uint      `json:"-"`
 	GpioMeter   uint      `json:"-"`
@@ -47,6 +49,7 @@ type garden struct {
 
 func NewGarden() *garden {
 	return &garden{
+		loc:         time.UTC,
 		GpioRelay:   31,      // GPIO 6
 		GpioMeter:   7,       // GPIO 4
 		StartTime:   "00:00",
@@ -190,15 +193,15 @@ loop:
 
 func (g *garden) run(p *merle.Packet) {
 	// Timer starts on 1 sec after next whole minute
-	future := time.Now().Truncate(time.Minute).
+	future := g.now().Truncate(time.Minute).
 		Add(time.Minute).Add(time.Second)
-	next := future.Sub(time.Now())
+	next := future.Sub(g.now())
 	timer := time.NewTimer(next)
 
 	for {
 		select {
 		case _ = <-timer.C:
-			now := time.Now()
+			now := g.now()
 			if g.StartDays[now.Weekday()] {
 				hr, min, _ := now.Clock()
 				hhmm := fmt.Sprintf("%02d:%02d", hr, min)
@@ -207,9 +210,9 @@ func (g *garden) run(p *merle.Packet) {
 				}
 			}
 			// Timer starts on 1 sec after next whole minute
-			future := time.Now().Truncate(time.Minute).
+			future := g.now().Truncate(time.Minute).
 				Add(time.Minute).Add(time.Second)
-			next := future.Sub(time.Now())
+			next := future.Sub(g.now())
 			timer = time.NewTimer(next)
 		case cmd := <-g.cmd:
 			switch cmd {
@@ -285,7 +288,7 @@ func (g *garden) gallonsGoal(p *merle.Packet) {
 func (g *garden) getState(p *merle.Packet) {
 	g.Lock()
 	g.Msg = merle.ReplyState
-	g.Now = time.Now()
+	g.Now = g.now()
 	p.Marshal(g)
 	g.Unlock()
 	p.Reply()
@@ -302,12 +305,42 @@ func (g *garden) updateState(p *merle.Packet) {
 	p.Broadcast()
 }
 
+type msgDateTime struct {
+	Msg               string
+	DateTime          time.Time
+	ZoneOffsetMinutes int
+}
+
+func (g *garden) now() time.Time {
+	// Represent time.Now() shifted by g.dur duration and in location g.loc
+	return time.Now().Add(g.dur).In(g.loc)
+}
+
+func (g *garden) dateTime(p *merle.Packet) {
+	// Only calculate time and time zone offsets from browser time and RPi
+	// time once, on first browser contact.  So basically, system time will
+	// be set to the time of the first browser contact.
+	if g.loc == time.UTC {
+		var msg msgDateTime
+		p.Unmarshal(&msg)
+		// g.dur is the time duration between RPi time and the time passed in
+		// from the browser.  We'll add this duration time back to RPi time to
+		// get browser time.
+		g.dur = time.Now().Sub(msg.DateTime)
+		// g.loc is the time.Location of the browser's time zone.
+		g.loc = time.FixedZone("GardenTime", -msg.ZoneOffsetMinutes * 60)
+	}
+
+	p.Broadcast()
+}
+
 func (g *garden) Subscribers() merle.Subscribers {
 	return merle.Subscribers{
 		merle.CmdInit:    g.init,
 		merle.CmdRun:     g.run,
 		merle.GetState:   g.getState,
 		merle.ReplyState: g.saveState,
+		"DateTime":       g.dateTime,
 		"Update":         g.updateState,
 		"Start":          g.start,
 		"Stop":           g.stop,

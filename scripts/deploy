@@ -5,24 +5,57 @@
 # chmod +x deploy
 # ./deploy
 #
- 
+
+# Get some inputs
+
+read -e -p "Project: " Project
+read -e -p "Auto-start (y/[N])? " AutoStartYn
+
+read -e -p "Configure as access point (AP) (y/[N])? " AccessPointYn
+case $AccessPointYn in
+	[yY])
+		read -e -p "AP Country Code: " -i "US" CountryCode
+		read -e -p "SSID: " -i ${Project} SSID
+        ;;
+esac
+
+read -e -p "Disable SSH access (after reboot) (y/[N]? " DisableSSHYn
+
 wget https://go.dev/dl/go1.19.linux-armv6l.tar.gz
 sudo tar -C /usr/local -zxf go1.19.linux-armv6l.tar.gz 
 export PATH=/usr/local/go/bin:$PATH
 
-cat << EOF >> ~/.profile
-
-export PATH=/usr/local/go/bin:\$PATH
-EOF
+FOUND=`grep "/usr/local/go/bin" ~/.profile`
+if [ -z "${FOUND}" ]; then
+	cat <<- EOF >> ~/.profile
+		export PATH=/usr/local/go/bin:\$PATH
+	EOF
+fi
 
 sudo apt update
 sudo apt install git -y
+
+cd
 git clone --depth=1 https://github.com/merliot/projects.git
-cd projects/garden
 
-./build
-./auto-start 
-../scripts/ap-start 
+cd projects/${Project}
+../scripts/build ${Project}
 
-sudo /etc/init.d/ssh stop
-sudo update-rc.d ssh disable
+case $AutoStartYn in
+	[yY])
+		../scripts/auto-start ${Project}
+        ;;
+esac
+
+case $AccessPointYn in
+	[yY])
+		../scripts/ap-start ${CountryCode} ${SSID}
+        ;;
+esac
+
+case $DisableSSHYn in
+	[yY])
+		sudo /etc/init.d/ssh stop
+		sudo update-rc.d ssh disable
+        ;;
+esac

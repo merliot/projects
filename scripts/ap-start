@@ -5,7 +5,7 @@
 #
 
 echo "Installing access point software"
-sudo rm /etc/dnsmasq.conf
+sudo rm /etc/dnsmasq.conf >/dev/null 2>&1
 sudo apt install hostapd dnsmasq -y >/dev/null 2>&1
 sudo systemctl unmask hostapd
 sudo systemctl enable hostapd
@@ -33,9 +33,9 @@ EOF
 sudo rfkill unblock wlan
 
 sudo tee /etc/hostapd/hostapd.conf >/dev/null <<EOF
-country_code=US
+country_code=$1
 interface=wlan0
-ssid=garden
+ssid=$2
 hw_mode=g
 channel=7
 macaddr_acl=0

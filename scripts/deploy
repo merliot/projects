@@ -22,6 +22,7 @@ esac
 read -e -p "Disable SSH access (after reboot) (y/[N]? " DisableSSHYn
 
 wget -nc https://go.dev/dl/go1.19.linux-armv6l.tar.gz
+echo "Untarring Go..."
 sudo tar -C /usr/local -zxf go1.19.linux-armv6l.tar.gz 
 export PATH=/usr/local/go/bin:$PATH
 

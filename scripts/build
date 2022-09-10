@@ -34,7 +34,11 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-sudo apt-get -y install libpam0g-dev >/dev/null 2>&1
+dpkg -s libpam0g-dev >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+   sudo apt update
+   sudo apt-get -y install libpam0g-dev >/dev/null 2>&1
+fi
 
 tags=""
 if [ ! -z "$1" ]; then

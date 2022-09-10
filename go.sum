@@ -46,6 +46,8 @@ github.com/mattn/go-isatty v0.0.8/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hd
 github.com/mattn/go-isatty v0.0.9/go.mod h1:YNRxwqDuOph6SZLI9vUUz6OYw3QyUt7WiY2yME+cCiQ=
 github.com/merliot/merle v0.0.47 h1:NpN2uo1mfLt8J1gE+0pBfDTkmjjeK+N3MjXpX3TbRog=
 github.com/merliot/merle v0.0.47/go.mod h1:LJ+dX3wQsJIs5zzjbD0ckGtes364fT9R4sW7G6EapHU=
+github.com/merliot/merle v0.0.48 h1:gCe2F5NCgx/lv5o4v9Ie0Ho2F8zr90VW5ebyhe+5cL0=
+github.com/merliot/merle v0.0.48/go.mod h1:LJ+dX3wQsJIs5zzjbD0ckGtes364fT9R4sW7G6EapHU=
 github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b/go.mod h1:01TrycV0kFyexm33Z7vhZRXopbI8J3TDReVlkTgMUxE=
 github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab/go.mod h1:y1pL58r5z2VvAjeG1VLGc8zOQgSOzbKN7kMHPvFXJ+8=
 github.com/msteinert/pam v1.0.0 h1:4XoXKtMCH3+e6GIkW41uxm6B37eYqci/DH3gzSq7ocg=

@@ -3,7 +3,7 @@ module github.com/merliot/projects
 go 1.18
 
 require (
-	github.com/merliot/merle v0.0.47
+	github.com/merliot/merle v0.0.48
 	gobot.io/x/gobot v1.16.0
 )
 

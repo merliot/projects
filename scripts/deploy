@@ -9,9 +9,9 @@
 # Get some inputs
 
 read -e -p "Project: " Project
-read -e -p "Auto-start (y/[N])? " AutoStartYn
+read -e -p "Auto-start (y/N)? " AutoStartYn
 
-read -e -p "Configure as access point (AP) (y/[N])? " AccessPointYn
+read -e -p "Configure as access point (AP) (y/N)? " AccessPointYn
 case $AccessPointYn in
 	[yY])
 		read -e -p "AP Country Code: " -i "US" CountryCode
@@ -19,7 +19,7 @@ case $AccessPointYn in
         ;;
 esac
 
-read -e -p "Disable SSH access (after reboot) (y/[N]? " DisableSSHYn
+read -e -p "Disable SSH access (after reboot) (y/N? " DisableSSHYn
 
 wget -nc https://go.dev/dl/go1.19.linux-armv6l.tar.gz
 echo "Untarring Go..."

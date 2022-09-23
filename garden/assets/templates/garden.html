@@ -90,9 +90,16 @@
 			</div>
 		</div>
 
-		<script src="/{{.AssetsDir}}/js/garden.js"></script>
-		<script>Run({{.WebSocket}})</script>
+		<script src="/{{.AssetsDir}}/js/wasm_exec.js"></script>
+		<script>
+			const go = new Go()
+			const wasm = "/{{.AssetsDir}}/wasm/garden.wasm"
+
+			WebAssembly.instantiateStreaming(fetch(wasm), go.importObject).then(function (obj) {
+				go.run(obj.instance)
+				Run({{.WebSocket}})
+			})
+		</script>
 
 	</body>
 </html>
-

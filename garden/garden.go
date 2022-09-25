@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/merliot/merle"
+	"github.com/merliot/projects/garden/msg"
+	"github.com/merliot/projects/garden/state"
 	"gobot.io/x/gobot/drivers/gpio"
 	"gobot.io/x/gobot/platforms/raspi"
 )
@@ -37,24 +39,18 @@ type garden struct {
 	Demo        bool      `json:"-"`
 	GpioRelay   uint      `json:"-"`
 	GpioMeter   uint      `json:"-"`
-	// JSON exports
-	Msg         string
-	Now         time.Time
-	StartTime   string
-	StartDays   [7]bool
-	Gallons     float64
-	GallonsGoal uint
-	Running     bool
+	state.State
 }
 
 func NewGarden() *garden {
-	return &garden{
+	g := &garden{
 		loc:         time.UTC,
 		GpioRelay:   31,      // GPIO 6
 		GpioMeter:   7,       // GPIO 4
-		StartTime:   "00:00",
-		GallonsGoal: 1,
 	}
+	g.StartTime = "00:00"
+	g.GallonsGoal = 1
+	return g
 }
 
 const store string = "store"
@@ -94,14 +90,8 @@ func (g *garden) init(p *merle.Packet) {
 	g.flowMeter.Start()
 }
 
-type msgUpdate struct {
-	Msg     string
-	Gallons float64
-	Running bool
-}
-
 func (g *garden) update(p *merle.Packet) {
-	var msg = msgUpdate{Msg: "Update"}
+	var msg = msg.Update{Msg: "Update"}
 	g.Lock()
 	if g.pulses >= g.pulsesGoal {
 		g.Gallons = float64(g.GallonsGoal)
@@ -239,14 +229,8 @@ func (g *garden) stop(p *merle.Packet) {
 	}
 }
 
-type msgDay struct {
-	Msg   string
-	Day   uint
-	State bool
-}
-
 func (g *garden) day(p *merle.Packet) {
-	var msg msgDay
+	var msg msg.Day
 	p.Unmarshal(&msg)
 	g.Lock()
 	g.StartDays[msg.Day] = msg.State
@@ -255,13 +239,8 @@ func (g *garden) day(p *merle.Packet) {
 	p.Broadcast()
 }
 
-type msgStartTime struct {
-	Msg   string
-	Time  string
-}
-
 func (g *garden) startTime(p *merle.Packet) {
-	var msg msgStartTime
+	var msg msg.StartTime
 	p.Unmarshal(&msg)
 	g.Lock()
 	g.StartTime = msg.Time

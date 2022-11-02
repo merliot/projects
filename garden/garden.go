@@ -350,8 +350,8 @@ func (g *garden) Subscribers() merle.Subscribers {
 	}
 }
 
-func (g *garden) Assets() *merle.ThingAssets {
-	return &merle.ThingAssets{
+func (g *garden) Assets() merle.ThingAssets {
+	return merle.ThingAssets{
 		AssetsDir: "assets",
 		HtmlTemplate: "templates/garden.html",
 	}

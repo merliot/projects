@@ -78,8 +78,8 @@ func (d *demo) Subscribers() merle.Subscribers {
 	}
 }
 
-func (d *demo) Assets() *merle.ThingAssets {
-	return &merle.ThingAssets{
+func (d *demo) Assets() merle.ThingAssets {
+	return merle.ThingAssets{
 		AssetsDir:    "assets",
 		HtmlTemplate: "templates/demo.html",
 	}

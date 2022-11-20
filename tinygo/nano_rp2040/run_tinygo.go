@@ -4,10 +4,12 @@
 package nano_rp2040
 
 import (
+	"fmt"
 	"machine"
 	"time"
 
 	"github.com/merliot/merle"
+	"tinygo.org/x/drivers/net/http"
 	"tinygo.org/x/drivers/wifinina"
 )
 
@@ -17,9 +19,6 @@ func init() {
 }
 
 func (n *nano_rp2040) ConnectAP(ssid, pass string) string {
-	// 2 sec delay otherwise some printlns are missed at startup in serial output
-	time.Sleep(2 * time.Second)
-
 	// These are the default pins for the Arduino Nano33 IoT.
 	spi := machine.NINA_SPI
 
